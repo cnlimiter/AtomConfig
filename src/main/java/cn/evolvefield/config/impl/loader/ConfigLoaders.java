@@ -1,6 +1,6 @@
 package cn.evolvefield.config.impl.loader;
 
-import cn.evolvefield.config.impl.Config;
+import cn.evolvefield.config.Config;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;

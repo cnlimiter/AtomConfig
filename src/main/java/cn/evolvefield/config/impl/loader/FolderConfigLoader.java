@@ -1,7 +1,7 @@
 package cn.evolvefield.config.impl.loader;
 
+import cn.evolvefield.config.Config;
 import cn.evolvefield.config.api.loader.IConfigLoader;
-import cn.evolvefield.config.impl.Config;
 import lombok.AllArgsConstructor;
 
 import java.io.File;

@@ -52,7 +52,6 @@ public class ConfigDataHandler implements IConfigDataHandler {
                     new ConfigDataListCharacter(),
                     new ConfigDataListDouble(),
                     new ConfigDataListEnum<>(),
-                    new ConfigDataFloat(),
                     new ConfigDataListFloat(),
                     new ConfigDataListInteger(),
                     new ConfigDataListLong(),
@@ -136,9 +135,7 @@ public class ConfigDataHandler implements IConfigDataHandler {
         return this.configurationDataList.stream()
                 .filter((configurationData) -> configurationData.getType() == dataType)
                 .filter((configurationData) ->
-                {
-                    return Stream.of(configurationData.getTypeClasses())
-                            .anyMatch((typeClass) -> typeClass.isAssignableFrom(clazz));
-                }).findFirst();
+                        Stream.of(configurationData.getTypeClasses())
+                                .anyMatch((typeClass) -> typeClass.isAssignableFrom(clazz))).findFirst();
     }
 }

@@ -1,4 +1,4 @@
-package cn.evolvefield.config.impl;
+package cn.evolvefield.config;
 
 import cn.evolvefield.config.annotations.ConfigComments;
 import cn.evolvefield.config.annotations.ConfigField;
@@ -12,6 +12,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -29,6 +30,7 @@ import java.util.stream.Stream;
  * Date: 2022/12/23 18:20
  * Description:
  */
+@AllArgsConstructor
 public class Config implements IConfig {
     public static Logger logger = Logger.getLogger("AtomConfig");
 

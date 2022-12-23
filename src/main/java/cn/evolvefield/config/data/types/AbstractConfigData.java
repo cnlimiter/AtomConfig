@@ -1,8 +1,8 @@
 
 package cn.evolvefield.config.data.types;
 
+import cn.evolvefield.config.Config;
 import cn.evolvefield.config.base.impl.file.FileConfiguration;
-import cn.evolvefield.config.impl.Config;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,11 +1,11 @@
 package cn.evolvefield.config.base.impl;
 
 
+import cn.evolvefield.config.Config;
 import cn.evolvefield.config.base.api.ConfigurationSection;
 import cn.evolvefield.config.base.exception.InvalidConfigurationException;
 import cn.evolvefield.config.base.impl.file.FileConfiguration;
 import cn.evolvefield.config.base.serialization.ConfigurationSerialization;
-import cn.evolvefield.config.impl.Config;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;

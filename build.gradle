@@ -31,6 +31,7 @@ repositories {
 }
 
 dependencies {
+    testImplementation 'org.projectlombok:lombok:1.18.24'
     shadow 'org.projectlombok:lombok:1.18.24'
     shadow 'org.yaml:snakeyaml:1.33'
     compileOnly 'com.google.guava:guava:31.0.1-jre'

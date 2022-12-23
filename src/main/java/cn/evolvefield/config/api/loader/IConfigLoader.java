@@ -1,6 +1,6 @@
 package cn.evolvefield.config.api.loader;
 
-import cn.evolvefield.config.impl.Config;
+import cn.evolvefield.config.Config;
 
 import java.util.List;
 
