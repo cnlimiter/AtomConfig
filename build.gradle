@@ -1,0 +1,84 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group = project.maven_group
+version = project.version
+
+
+def targetJavaVersion = 17
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release = targetJavaVersion
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    archivesBaseName = project.archives_base_name
+
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    shadow 'org.projectlombok:lombok:1.18.24'
+    shadow 'org.yaml:snakeyaml:1.33'
+    compileOnly 'com.google.guava:guava:31.0.1-jre'
+    compileOnly 'org.jetbrains:annotations:20.1.0'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.yaml:snakeyaml:1.33'
+    annotationProcessor 'com.google.guava:guava:31.0.1-jre'
+    annotationProcessor 'org.jetbrains:annotations:20.1.0'
+
+}
+
+artifacts {
+    archives jar
+    archives shadowJar
+}
+
+shadowJar {
+    project.configurations.shadow.setTransitive(true);
+    configurations = [project.configurations.shadow]
+    relocate 'org.yaml', "cn.evolvefield.config.yaml"
+    classifier = ""
+    archiveBaseName.set(project.archives_base_name)
+    archiveVersion.set(project.version)
+
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+            version = "${project.version}"
+            artifactId = "${project.archives_base_name}"
+            groupId = "${project.maven_group}"
+        }
+    }
+
+    repositories {
+        if (System.getenv('MAVEN_USERNAME') != null && System.getenv('MAVEN_PASSWORD') != null) {
+            maven {
+                name 'release'
+                url = 'https://maven.nova-committee.cn/releases'
+
+                credentials {
+                    username System.getenv('MAVEN_USERNAME')
+                    password System.getenv('MAVEN_PASSWORD')
+                }
+            }
+        }
+    }
+}
