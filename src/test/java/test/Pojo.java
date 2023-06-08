@@ -1,7 +1,11 @@
-import cn.evolvefield.config.base.serialization.ConfigurationSerializable;
-import cn.evolvefield.config.base.serialization.SerializableAs;
+package test;
+
+
+import cn.evole.config.bukkit.serialization.ConfigurationSerializable;
+import cn.evole.config.bukkit.serialization.SerializableAs;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.ToString;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +16,8 @@ import java.util.Map;
  * Date: 2022/12/23 20:01
  * Description:自定义序列对象
  */
-@Data
+@Builder
+@ToString
 @AllArgsConstructor
 @SerializableAs("Pojo")
 public class Pojo implements ConfigurationSerializable {
@@ -21,7 +26,10 @@ public class Pojo implements ConfigurationSerializable {
     private int id;
 
     public static Pojo deserialize(Map<String, Object> serialized) {
-        return new Pojo((String) serialized.get("Name"), (int) serialized.get("Id"));
+        return Pojo.builder()
+                .name((String) serialized.get("Name"))
+                .id((int) serialized.get("Id"))
+                .build();
     }
 
     @Override
