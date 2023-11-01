@@ -6,15 +6,15 @@
  */
 package cn.evole.config.data.types;
 
+import cn.evole.config.yaml.file.FileConfiguration;
 import lombok.EqualsAndHashCode;
-import cn.evole.config.bukkit.file.FileConfiguration;
 
 import java.util.Collections;
 import java.util.Map;
 
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = true)
 public abstract class AbstractConfigDataMap<T>
-        extends AbstractConfigData<Map<T, ?>> {
+        extends AbstractConfigData<Map<T, Object>> {
     public AbstractConfigDataMap(Class<?>... typeClasses) {
         super(ConfigDataType.MAP, typeClasses);
     }
@@ -25,7 +25,7 @@ public abstract class AbstractConfigDataMap<T>
     }
 
     @Override
-    public Map<T, ?> getDefault() {
+    public Map<T, Object> getDefault() {
         return Collections.emptyMap();
     }
 }

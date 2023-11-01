@@ -6,16 +6,15 @@
  */
 package cn.evole.config.data.map;
 
-import lombok.EqualsAndHashCode;
-import cn.evole.config.bukkit.ConfigurationSection;
-import cn.evole.config.bukkit.file.FileConfiguration;
 import cn.evole.config.data.types.AbstractConfigData;
 import cn.evole.config.data.types.AbstractConfigDataMap;
 import cn.evole.config.impl.ConfigDataManager;
+import cn.evole.config.yaml.ConfigurationSection;
+import cn.evole.config.yaml.file.FileConfiguration;
+import lombok.EqualsAndHashCode;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,13 +28,13 @@ public class ConfigDataMapEnum<E extends Enum<E>>
 
     @Override
     @SuppressWarnings("unchecked")
-    public void set(FileConfiguration configuration, String path, Map<E, ?> values, Field field) {
+    public void set(FileConfiguration configuration, String path, Map<E, Object> values, Field field) {
         values.forEach((key, value) ->
         {
-            Optional<AbstractConfigData> optionalConfigurationData = ConfigDataManager.getInstance().getType(value.getClass());
+            Optional<AbstractConfigData<?>> optionalConfigurationData = ConfigDataManager.getInstance().getType(value.getClass());
 
             if (optionalConfigurationData.isPresent()) {
-                optionalConfigurationData.get().set(configuration, path + "." + key.name(), value, field);
+                ((AbstractConfigData<Object>) optionalConfigurationData.get()).set(configuration, path + "." + key, value, field);
             } else {
                 logger.warning("Can't set value with key '" + key.name() + "' to map, path '" + path + "'");
             }
@@ -44,7 +43,7 @@ public class ConfigDataMapEnum<E extends Enum<E>>
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map<E, ?> get(FileConfiguration configuration, String path, Field field) {
+    public Map<E, Object> get(FileConfiguration configuration, String path, Field field) {
         Map<E, Object> values = new HashMap<>();
 
         ConfigurationSection section = configuration.getConfigurationSection(path);
@@ -57,7 +56,7 @@ public class ConfigDataMapEnum<E extends Enum<E>>
         {
             Class<?> objectType = value.getClass();
 
-            Optional<AbstractConfigData> optionalConfigurationData = ConfigDataManager.getInstance().getType(objectType);
+            Optional<AbstractConfigData<?>> optionalConfigurationData = ConfigDataManager.getInstance().getType(objectType);
 
             if (optionalConfigurationData.isPresent()) {
                 values.put(Enum.valueOf(((Class<E>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]), key),
@@ -72,7 +71,7 @@ public class ConfigDataMapEnum<E extends Enum<E>>
     }
 
     @Override
-    public Map<E, ?> getDefault() {
-        return Collections.emptyMap();
+    public Map<E, Object> getDefault() {
+        return super.getDefault();
     }
 }

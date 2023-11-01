@@ -1,30 +1,40 @@
-/**
- * Author cnlimiter
- * CreateTime 2023/6/8 1:42
- * Name AtomConfig
- * Description
- */
-package cn.evole.config.bukkit.file;
+package cn.evole.config.yaml.file;
 
+import cn.evole.config.yaml.serialization.ConfigurationSerialization;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
+import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
-import cn.evole.config.bukkit.serialization.ConfigurationSerialization;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class YamlConstructor
-        extends SafeConstructor {
-    public YamlConstructor() {
+public class YamlConstructor extends SafeConstructor {
+
+    public YamlConstructor(@NotNull LoaderOptions loaderOptions) {
+        super(loaderOptions);
         this.yamlConstructors.put(Tag.MAP, new ConstructCustomObject());
     }
 
-    private class ConstructCustomObject
-            extends ConstructYamlMap {
+    @Override
+    public void flattenMapping(@NotNull final MappingNode node) {
+        super.flattenMapping(node);
+    }
+
+    @Nullable
+    public Object construct(@NotNull Node node) {
+        return constructObject(node);
+    }
+
+    private class ConstructCustomObject extends ConstructYamlMap {
+
+        @Nullable
         @Override
-        public Object construct(Node node) {
+        public Object construct(@NotNull Node node) {
             if (node.isTwoStepsConstruction()) {
                 throw new YAMLException("Unexpected referential mapping structure. Node: " + node);
             }
@@ -33,8 +43,9 @@ public class YamlConstructor
 
             if (raw.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
                 Map<String, Object> typed = new LinkedHashMap<>(raw.size());
-
-                raw.forEach((key, value) -> typed.put(key.toString(), value));
+                for (Map.Entry<?, ?> entry : raw.entrySet()) {
+                    typed.put(entry.getKey().toString(), entry.getValue());
+                }
 
                 try {
                     return ConfigurationSerialization.deserializeObject(typed);
@@ -47,7 +58,7 @@ public class YamlConstructor
         }
 
         @Override
-        public void construct2ndStep(Node node, Object object) {
+        public void construct2ndStep(@NotNull Node node, @NotNull Object object) {
             throw new YAMLException("Unexpected referential mapping structure. Node: " + node);
         }
     }

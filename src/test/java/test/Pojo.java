@@ -1,11 +1,11 @@
 package test;
 
 
-import cn.evole.config.bukkit.serialization.ConfigurationSerializable;
-import cn.evole.config.bukkit.serialization.SerializableAs;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.ToString;
+import cn.evole.config.api.ConfigComments;
+import cn.evole.config.api.ConfigField;
+import cn.evole.config.yaml.serialization.ConfigurationSerializable;
+import cn.evole.config.yaml.serialization.SerializableAs;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,24 +16,45 @@ import java.util.Map;
  * Date: 2022/12/23 20:01
  * Description:自定义序列对象
  */
-@Builder
-@ToString
-@AllArgsConstructor
 @SerializableAs("Pojo")
 public class Pojo implements ConfigurationSerializable {
+    @ConfigField("name")
+    @ConfigComments("name")
     private String name;
 
+    @ConfigField("id")
+    @ConfigComments("id")
     private int id;
 
-    public static Pojo deserialize(Map<String, Object> serialized) {
-        return Pojo.builder()
-                .name((String) serialized.get("Name"))
-                .id((int) serialized.get("Id"))
-                .build();
+    public Pojo(String name, int id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    public static Pojo valueOf(Map<String, Object> map) {
+        return new Pojo(
+                (map.get("Name") != null ? (String) map.get("Name") : ""),
+                (map.get("Id") != null ? (Integer) map.get("Id") : 0)
+        );
+    }
+
+    public static Pojo deserialize(Map<String, Object> map) {
+        return new Pojo(
+                (map.get("Name") != null ? (String) map.get("Name") : ""),
+                (map.get("Id") != null ? (Integer) map.get("Id") : 0)
+        );
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
-    public Map<String, Object> serialize() {
+    public @NotNull Map<String, Object> serialize() {
         Map<String, Object> serlialized = new HashMap<>();
 
         serlialized.put("Name", this.name);

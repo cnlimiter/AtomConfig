@@ -6,8 +6,8 @@
  */
 package cn.evole.config.data.types;
 
+import cn.evole.config.yaml.file.FileConfiguration;
 import lombok.EqualsAndHashCode;
-import cn.evole.config.bukkit.file.FileConfiguration;
 
 import java.util.Collections;
 import java.util.List;

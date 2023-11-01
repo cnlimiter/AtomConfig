@@ -6,15 +6,14 @@
  */
 package cn.evole.config.data.map;
 
-import lombok.EqualsAndHashCode;
-import cn.evole.config.bukkit.ConfigurationSection;
-import cn.evole.config.bukkit.file.FileConfiguration;
 import cn.evole.config.data.types.AbstractConfigData;
 import cn.evole.config.data.types.AbstractConfigDataMap;
 import cn.evole.config.impl.ConfigDataManager;
+import cn.evole.config.yaml.ConfigurationSection;
+import cn.evole.config.yaml.file.FileConfiguration;
+import lombok.EqualsAndHashCode;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,13 +27,13 @@ public class ConfigDataMapInteger
 
     @Override
     @SuppressWarnings("unchecked")
-    public void set(FileConfiguration configuration, String path, Map<Integer, ?> values, Field field) {
+    public void set(FileConfiguration configuration, String path, Map<Integer, Object> values, Field field) {
         values.forEach((key, value) ->
         {
-            Optional<AbstractConfigData> optionalConfigurationData = ConfigDataManager.getInstance().getType(value.getClass());
+            Optional<AbstractConfigData<?>> optionalConfigurationData = ConfigDataManager.getInstance().getType(value.getClass());
 
             if (optionalConfigurationData.isPresent()) {
-                optionalConfigurationData.get().set(configuration, path + "." + key, value, field);
+                ((AbstractConfigData<Object>) optionalConfigurationData.get()).set(configuration, path + "." + key, value, field);
             } else {
                 logger.warning("Can't set value with key '" + key + "' to map, path '" + path + "'");
             }
@@ -42,7 +41,7 @@ public class ConfigDataMapInteger
     }
 
     @Override
-    public Map<Integer, ?> get(FileConfiguration configuration, String path, Field field) {
+    public Map<Integer, Object> get(FileConfiguration configuration, String path, Field field) {
         Map<Integer, Object> values = new HashMap<>();
 
         ConfigurationSection section = configuration.getConfigurationSection(path);
@@ -55,7 +54,7 @@ public class ConfigDataMapInteger
         {
             Class<?> objectType = value.getClass();
 
-            Optional<AbstractConfigData> optionalConfigurationData = ConfigDataManager.getInstance().getType(objectType);
+            Optional<AbstractConfigData<?>> optionalConfigurationData = ConfigDataManager.getInstance().getType(objectType);
 
             if (optionalConfigurationData.isPresent()) {
                 values.put(Integer.parseInt(key), optionalConfigurationData.get().get(configuration, path + "." + key, field));
@@ -68,7 +67,7 @@ public class ConfigDataMapInteger
     }
 
     @Override
-    public Map<Integer, ?> getDefault() {
-        return Collections.emptyMap();
+    public Map<Integer, Object> getDefault() {
+        return super.getDefault();
     }
 }

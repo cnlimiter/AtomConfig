@@ -9,8 +9,11 @@ package cn.evole.config;
 import cn.evole.config.api.ConfigComments;
 import cn.evole.config.api.ConfigField;
 import cn.evole.config.api.IConfig;
+import cn.evole.config.data.types.AbstractConfigData;
+import cn.evole.config.impl.ConfigDataManager;
 import cn.evole.config.impl.SerializationOptions;
 import cn.evole.config.impl.YamlEffectiveModel;
+import cn.evole.config.yaml.file.YamlConfiguration;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
@@ -18,9 +21,6 @@ import com.google.common.collect.MultimapBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import cn.evole.config.bukkit.file.YamlConfiguration;
-import cn.evole.config.data.types.AbstractConfigData;
-import cn.evole.config.impl.ConfigDataManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,12 +30,12 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+@Getter
 @AllArgsConstructor
 public class YmlConfig
         implements IConfig {
-    private static Logger logger = Logger.getLogger(YmlConfig.class.getName());
+    private static final Logger logger = Logger.getLogger(YmlConfig.class.getName());
 
-    @Getter
     protected String pathToFile;
 
     @SneakyThrows
@@ -51,7 +51,7 @@ public class YmlConfig
         ConfigComments header = this.getClass().getAnnotation(ConfigComments.class);
 
         if (header != null) {
-            configuration.options().header(Joiner.on("\r\n").join(header.value()));
+            configuration.options().setHeader(List.of(Joiner.on("\r\n").join(header.value())));
         }
 
         for (Map.Entry<Field, SerializationOptions> fieldData : this.getFieldsData().entrySet()) {
@@ -59,7 +59,7 @@ public class YmlConfig
 
             SerializationOptions serializationOptions = fieldData.getValue();
 
-            AbstractConfigData configurationData = serializationOptions.getData();
+            AbstractConfigData<Object> configurationData = (AbstractConfigData<Object>) serializationOptions.getData();
 
             String path = serializationOptions.getPath();
 
@@ -127,7 +127,7 @@ public class YmlConfig
         ConfigComments header = this.getClass().getAnnotation(ConfigComments.class);
 
         if (header != null) {
-            configuration.options().header(Joiner.on("\r\n").join(header.value()));
+            configuration.options().setHeader(List.of(Joiner.on("\r\n").join(header.value())));
         }
 
         for (Map.Entry<Field, SerializationOptions> fieldData : this.getFieldsData().entrySet()) {
@@ -137,7 +137,7 @@ public class YmlConfig
 
             String path = serializationOptions.getPath();
 
-            AbstractConfigData configurationData = serializationOptions.getData();
+            AbstractConfigData<Object> configurationData = (AbstractConfigData<Object>) serializationOptions.getData();
 
             String[] fieldComments = serializationOptions.getComments();
 
@@ -191,7 +191,7 @@ public class YmlConfig
                     ConfigField data = field.getAnnotation(ConfigField.class);
                     ConfigComments comments = field.getAnnotation(ConfigComments.class);
 
-                    Optional<AbstractConfigData> optionalConfigurationData = ConfigDataManager.getInstance().getType(field);
+                    Optional<AbstractConfigData<?>> optionalConfigurationData = ConfigDataManager.getInstance().getType(field);
 
                     if (optionalConfigurationData.isPresent()) {
                         SerializationOptions.SerializationOptionsBuilder serializationOptions =
@@ -223,7 +223,7 @@ public class YmlConfig
             return;
         }
 
-        int configurationIndent = configuration.options().getIndent();
+        int configurationIndent = configuration.options().indent();
 
         YamlEffectiveModel yamlEffectiveModel = new YamlEffectiveModel();
 

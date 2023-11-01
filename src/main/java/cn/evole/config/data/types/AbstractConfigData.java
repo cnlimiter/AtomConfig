@@ -6,11 +6,11 @@
  */
 package cn.evole.config.data.types;
 
+import cn.evole.config.YmlConfig;
+import cn.evole.config.yaml.file.FileConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import cn.evole.config.YmlConfig;
-import cn.evole.config.bukkit.file.FileConfiguration;
 
 import java.lang.reflect.Field;
 import java.util.logging.Logger;

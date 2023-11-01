@@ -6,9 +6,9 @@
  */
 package cn.evole.config.data.base;
 
-import lombok.EqualsAndHashCode;
-import cn.evole.config.bukkit.file.FileConfiguration;
 import cn.evole.config.data.types.AbstractConfigData;
+import cn.evole.config.yaml.file.FileConfiguration;
+import lombok.EqualsAndHashCode;
 
 import java.lang.reflect.Field;
 

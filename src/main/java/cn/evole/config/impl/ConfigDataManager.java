@@ -7,7 +7,6 @@
 package cn.evole.config.impl;
 
 import cn.evole.config.api.IConfigDataManager;
-import com.google.common.collect.Lists;
 import cn.evole.config.data.base.*;
 import cn.evole.config.data.list.*;
 import cn.evole.config.data.map.ConfigDataMapEnum;
@@ -15,6 +14,7 @@ import cn.evole.config.data.map.ConfigDataMapInteger;
 import cn.evole.config.data.map.ConfigDataMapString;
 import cn.evole.config.data.types.AbstractConfigData;
 import cn.evole.config.data.types.ConfigDataType;
+import com.google.common.collect.Lists;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -28,21 +28,18 @@ public class ConfigDataManager
         implements IConfigDataManager {
     private static final ConfigDataList LIST = new ConfigDataList();
     private static final ConfigDataMapString MAP = new ConfigDataMapString();
+
     private static volatile ConfigDataManager instance;
-    private final List<AbstractConfigData> configurationDataList = Lists.newArrayList
+    private final List<AbstractConfigData<?>> configurationDataList = Lists.newArrayList
             (
                     // base primitive objects
 
                     new ConfigDataBoolean(),
-                    new ConfigDataByte(),
-                    new ConfigDataCharacter(),
                     new ConfigDataDouble(),
                     new ConfigDataEnum<>(),
-                    new ConfigDataFloat(),
                     new ConfigDataInteger(),
                     new ConfigDataLong(),
                     new ConfigDataObject(),
-                    new ConfigDataShort(),
                     new ConfigDataString(),
 
                     // objects in list
@@ -53,7 +50,6 @@ public class ConfigDataManager
                     new ConfigDataListCharacter(),
                     new ConfigDataListDouble(),
                     new ConfigDataListEnum<>(),
-                    new ConfigDataFloat(),
                     new ConfigDataListFloat(),
                     new ConfigDataListInteger(),
                     new ConfigDataListLong(),
@@ -91,10 +87,10 @@ public class ConfigDataManager
     }
 
     @Override
-    public Optional<AbstractConfigData> getType(Field field) {
+    public Optional<AbstractConfigData<?>> getType(Field field) {
         Class<?> fieldType = field.getType();
 
-        Optional<AbstractConfigData> optionalConfigurationData = this.getType(ConfigDataType.OBJECT, fieldType);
+        Optional<AbstractConfigData<?>> optionalConfigurationData = this.getType(ConfigDataType.OBJECT, fieldType);
 
         if (List.class.isAssignableFrom(fieldType)) {
             Type fieldGenericType = field.getGenericType();
@@ -124,16 +120,14 @@ public class ConfigDataManager
     }
 
     @Override
-    public Optional<AbstractConfigData> getType(Class<?> clazz) {
+    public Optional<AbstractConfigData<?>> getType(Class<?> clazz) {
         return this.configurationDataList.stream()
                 .filter((configurationData) ->
-                {
-                    return Stream.of(configurationData.getTypeClasses())
-                            .anyMatch((typeClass) -> typeClass.isAssignableFrom(clazz));
-                }).findFirst();
+                        Stream.of(configurationData.getTypeClasses())
+                                .anyMatch((typeClass) -> typeClass.isAssignableFrom(clazz))).findFirst();
     }
 
-    protected Optional<AbstractConfigData> getType(ConfigDataType dataType, Class<?> clazz) {
+    protected Optional<AbstractConfigData<?>> getType(ConfigDataType dataType, Class<?> clazz) {
         return this.configurationDataList.stream()
                 .filter((configurationData) -> configurationData.getType() == dataType)
                 .filter((configurationData) ->

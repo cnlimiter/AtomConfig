@@ -21,9 +21,9 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 
 public interface IConfigDataManager {
-    Optional<AbstractConfigData> getType(Class<?> clazz);
+    Optional<AbstractConfigData<?>> getType(Class<?> clazz);
 
-    Optional<AbstractConfigData> getType(Field field);
+    Optional<AbstractConfigData<?>> getType(Field field);
 
     void register(AbstractConfigData<?> configurationData);
 
