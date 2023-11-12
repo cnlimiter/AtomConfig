@@ -53,6 +53,10 @@ public abstract class AutoReloadToml extends AutoLoadTomlConfig {
         }
     }
 
+    public void save(){
+        TomlUtil.writeConfig(this.path.toFile(), this);
+    }
+
     private void findReloadFieldArgument() {
         for (Field field : this.getClass().getDeclaredFields()) {
             Reload reload = field.getAnnotation(Reload.class);

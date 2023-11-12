@@ -300,9 +300,11 @@ public abstract class AutoLoadTomlConfig extends TomlConfig {
     }
 
     private Class<?> listTypeToArrayClass(Type fieldType) {
-        if (!List.class.isAssignableFrom((Class<?>) fieldType)) {
-            throw new IllegalArgumentException("Field is not a List");
-        }
+        //todo 修复list类型判断
+//        if (!List.class.isAssignableFrom((Class<?>) fieldType)) {
+//            throw new IllegalArgumentException("Field is not a List");
+//        }
+
 
         StringBuilder sb = new StringBuilder();
         listParameterizedTypeToArrayClassName(fieldType, sb);
