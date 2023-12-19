@@ -250,7 +250,7 @@ public class TomlUtil {
         try {
             File presentFile = checkCreateFile(file);
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(presentFile, append))) {
-                writer.write(new String(str.getBytes(), StandardCharsets.UTF_8));
+                writer.write(new String(str.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
                 writer.flush();
             }
             return presentFile;

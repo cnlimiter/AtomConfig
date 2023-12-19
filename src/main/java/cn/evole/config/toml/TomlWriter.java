@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class TomlWriter {
     private final StringBuilder sb = new StringBuilder();
@@ -115,12 +116,13 @@ class TomlWriter {
         } else if (type.isEnum()) {
             sb.append("\"").append(value).append("\"");
         } else if (value instanceof String str) {
-            if (str.contains("\n")) {
+            String s = new String(str.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+            if (s.contains("\n")) {
                 sb.append("\"\"\"\n");
-                sb.append(str);
+                sb.append(s);
                 sb.append("\"\"\"");
             } else {
-                sb.append("\"").append(str).append("\"");
+                sb.append("\"").append(s).append("\"");
             }
         } else if (value instanceof LocalDateTime dateTime) {
             sb.append(dateTime.format(DateTimeFormatter.ISO_DATE_TIME));
@@ -135,12 +137,12 @@ class TomlWriter {
 
     private void writeTopComment(String[] comment) {
         String commentString = String.join("\n", comment).replaceAll("(\n)+$", "").replace("\n", "\n# ");
-        sb.append("# ").append(new String(commentString.getBytes(), StandardCharsets.UTF_8));
+        sb.append("# ").append(new String(commentString.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
     }
 
     private void writeRightComment(String[] comment) {
         String commentString = String.join("\n", comment).replaceAll("(\n)+$", "").replace("\n", " ");
-        sb.append("  # ").append(new String(commentString.getBytes(), StandardCharsets.UTF_8));
+        sb.append("  # ").append(new String(commentString.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
     }
 
     private void writeLine(int count) {
@@ -160,7 +162,7 @@ class TomlWriter {
     }
 
     private boolean isArray(Object obj) {
-        return obj.getClass().isArray() || obj instanceof TomlArray ||  obj instanceof List<?>;
+        return obj.getClass().isArray() || obj instanceof TomlArray ||  obj instanceof List<?> || obj instanceof Set<?>;
     }
 
     private boolean isTableArray(Object obj) {
@@ -237,6 +239,9 @@ class TomlWriter {
             return array.toList();
         } else if (obj instanceof List<?> list) {
             return list;
+        }
+        else if (obj instanceof Set<?> set) {
+            return set.stream().toList();
         }
         throw new IllegalArgumentException(obj.getClass().getName() + " is not a toml array type");
     }
