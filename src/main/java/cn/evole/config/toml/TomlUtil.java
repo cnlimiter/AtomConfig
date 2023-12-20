@@ -8,10 +8,7 @@ import org.tomlj.TomlArray;
 import org.tomlj.TomlParseResult;
 import org.tomlj.TomlTable;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -249,8 +246,8 @@ public class TomlUtil {
     public static File writeStringToFile(File file, String str, boolean append) {
         try {
             File presentFile = checkCreateFile(file);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(presentFile, append))) {
-                writer.write(new String(str.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8));
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(presentFile, append), StandardCharsets.UTF_8)) {
+                writer.write(str);
                 writer.flush();
             }
             return presentFile;
