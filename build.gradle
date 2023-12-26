@@ -34,7 +34,7 @@ repositories {
 
 dependencies {
     implementation shadow("org.tomlj:tomlj:${tomlj_version}")
-    implementation shadow("org.antlr:antlr4-runtime:${antlr4_version}")
+    compileOnly("org.antlr:antlr4-runtime:${antlr4_version}")
     compileOnly("org.jetbrains:annotations:${annotations_version}")
 }
 
@@ -48,7 +48,7 @@ shadowJar {
     configurations = [project.configurations.shadow]
     archiveClassifier = ""
     relocate 'org.tomlj', "cn.evole.libs.tomlj"
-    relocate 'org.antlr', "cn.evole.libs.antlr"
+//    relocate 'org.antlr', "cn.evole.libs.antlr"
     archiveBaseName.set(main_name)
     archiveVersion.set(main_version)
 
