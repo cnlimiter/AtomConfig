@@ -1,7 +1,10 @@
 plugins {
+    id 'antlr'
     id 'java'
+    id 'jacoco'
     id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.diffplug.spotless' version '6.11.0'
 }
 
 group = main_group
@@ -27,13 +30,14 @@ java {
 }
 
 
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation shadow("org.tomlj:tomlj:${tomlj_version}")
+    antlr "org.antlr:antlr4:${antlr4_version}"
+    compileOnly("org.checkerframework:checker-qual:${checher_version}")
+
     compileOnly("org.antlr:antlr4-runtime:${antlr4_version}")
     compileOnly("org.jetbrains:annotations:${annotations_version}")
 }
@@ -47,7 +51,7 @@ shadowJar {
     project.configurations.shadow.setTransitive(false);
     configurations = [project.configurations.shadow]
     archiveClassifier = ""
-    relocate 'org.tomlj', "cn.evole.libs.tomlj"
+    //relocate 'org.tomlj', "cn.evole.libs.tomlj"
 //    relocate 'org.antlr', "cn.evole.libs.antlr"
     archiveBaseName.set(main_name)
     archiveVersion.set(main_version)
