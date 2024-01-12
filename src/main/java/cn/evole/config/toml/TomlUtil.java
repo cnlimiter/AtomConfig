@@ -1,6 +1,8 @@
 package cn.evole.config.toml;
 
 import cn.evole.config.toml.exception.TomlInvalidTypeException;
+import cn.evole.config.toml.util.StringUtil;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tomlj.Toml;
@@ -479,10 +481,11 @@ public class TomlUtil {
         if (value == null) {
             return defaultValue.get();
         }
-        if (!(value instanceof TomlArray array)) {
+        if (!(value instanceof TomlArray)) {
             throw new TomlInvalidTypeException(
                     "Value of '" + key + "' is a " + value.getClass().getSimpleName());
         }
+        val array = (TomlArray) value;
         return tomlArrayToArray(clazz, array);
     }
 
@@ -805,7 +808,8 @@ public class TomlUtil {
         for (int i = 0; i < array.size(); i++) {
             Object obj = array.get(i);
 
-            if (obj instanceof TomlArray arr) {
+            if (obj instanceof TomlArray) {
+                val arr = (TomlArray) obj;
                 if (componentType == null || !componentType.isArray()) {
                     throw new IllegalArgumentException("Target array type dimensions does not match TomlArray value dimensions");
                 }
@@ -828,14 +832,16 @@ public class TomlUtil {
 
         Class<?> clazz = value.getClass();
 
-        if (value instanceof Long l) {
+        if (value instanceof Long) {
+            val l = (Long) value;
             if (l <= Integer.MAX_VALUE && l >= Integer.MIN_VALUE) {
                 return Math.toIntExact(l);
             }
             return l;
         }
 
-        if (value instanceof TomlTable table) {
+        if (value instanceof TomlTable) {
+            val table = (TomlTable) value;
             if (configType != null && TomlConfig.class.isAssignableFrom(configType)) {
                 return parseConfig(table, configType);
             } else {
@@ -843,7 +849,8 @@ public class TomlUtil {
             }
         }
 
-        if (value instanceof TomlArray tomlArray) {
+        if (value instanceof TomlArray) {
+            val tomlArray = (TomlArray) value;
             Class<?> arrayClazz = tomlArrayToArrayType(tomlArray);
             if (arrayClazz == TomlArray.class) {
                 return tomlArray;
@@ -868,7 +875,7 @@ public class TomlUtil {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("[".repeat(dimensions[0]));
+        sb.append(StringUtil.repeat("[", dimensions[0]));
         if (arrayType[0] == int.class) {
             sb.append("I");
         } else if (arrayType[0] == long.class) {
@@ -900,13 +907,15 @@ public class TomlUtil {
                 return;
             }
 
-            if (element instanceof TomlArray array) {
+            if (element instanceof TomlArray) {
+                val array = (TomlArray) element;
                 if (i > 0) {
                     dimensions[0]--;
                 }
                 tomlArrayToArrayType(array, arrayType, dimensions);
                 continue;
-            } else if (element instanceof Long longValue) {
+            } else if (element instanceof Long) {
+                val longValue = (Long) element;
                 if (longValue <= Integer.MAX_VALUE && longValue >= Integer.MIN_VALUE) {
                     elementType = int.class;
                 } else {

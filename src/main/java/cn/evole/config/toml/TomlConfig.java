@@ -122,9 +122,26 @@ public abstract class TomlConfig {
         return resultMap;
     }
 
-    record MetaValue(Object value, TableField tableField) {
-        public MetaValue(Object value) {
+    public static class MetaValue{
+        Object value;
+        TableField tableField;
+
+        public MetaValue(Object value){
             this(value, null);
         }
+
+        public MetaValue(Object value, TableField tableField){
+            this.value = value;
+            this.tableField = tableField;
+        }
+
+        public TableField tableField() {
+            return tableField;
+        }
+
+        public Object value() {
+            return value;
+        }
     }
+
 }

@@ -1,5 +1,7 @@
 package cn.evole.config.toml.util;
 
+import java.util.Arrays;
+
 /**
  * Name: Toml / StringUtil
  * Author: cnlimiter
@@ -8,6 +10,60 @@ package cn.evole.config.toml.util;
  */
 
 public class StringUtil {
+
+    public static final String EMPTY = "";
+    private static final int PAD_LIMIT = 8192;
+
+    public static String repeat(final String str, final int repeat) {
+
+        if (str == null) {
+            return null;
+        }
+        if (repeat <= 0) {
+            return EMPTY;
+        }
+        final int inputLength = str.length();
+        if (repeat == 1 || inputLength == 0) {
+            return str;
+        }
+        if (inputLength == 1 && repeat <= PAD_LIMIT) {
+            return repeat(String.valueOf(str.charAt(0)), repeat);
+        }
+
+        final int outputLength = inputLength * repeat;
+        switch (inputLength) {
+            case 1 :
+                return repeat(String.valueOf(str.charAt(0)), repeat);
+            case 2 :
+                final char ch0 = str.charAt(0);
+                final char ch1 = str.charAt(1);
+                final char[] output2 = new char[outputLength];
+                for (int i = repeat * 2 - 2; i >= 0; i--, i--) {
+                    output2[i] = ch0;
+                    output2[i + 1] = ch1;
+                }
+                return new String(output2);
+            default :
+                final StringBuilder buf = new StringBuilder(outputLength);
+                for (int i = 0; i < repeat; i++) {
+                    buf.append(str);
+                }
+                return buf.toString();
+        }
+    }
+
+    public static boolean isBlank(final CharSequence cs) {
+        int strLen;
+        if (cs == null || (strLen = cs.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(cs.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public static String translateEscapes(String base) {
         if (base.isEmpty()) {

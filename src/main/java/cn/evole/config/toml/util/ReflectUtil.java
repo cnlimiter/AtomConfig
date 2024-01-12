@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReflectUtil {
     /**
@@ -20,8 +21,8 @@ public class ReflectUtil {
         }
         for (int i = classes.size() - 1; i >= 0; i--) {
             Class<?> c = classes.get(i);
-            fieldList.addAll(Arrays.stream(c.getDeclaredFields()).toList());
+            fieldList.addAll(Arrays.stream(c.getDeclaredFields()).collect(Collectors.toList()));
         }
-        return fieldList.toArray(Field[]::new);
+        return fieldList.toArray(new Field[0]);
     }
 }

@@ -89,6 +89,14 @@ class ConfigFileWatcher {
         thread.start();
     }
 
-    record ReloadTarget(AutoReloadToml obj, Field field) {
+    public static class ReloadTarget{
+        AutoReloadToml obj;
+        Field field;
+        public ReloadTarget(AutoReloadToml obj, Field field) {
+            this.field = field;
+            this.obj = obj;
+        }
     }
+
+
 }

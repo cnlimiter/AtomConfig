@@ -1,6 +1,8 @@
 package cn.evole.config.toml;
 
 import cn.evole.config.toml.annotation.TableField;
+import cn.evole.config.toml.util.StringUtil;
+import lombok.val;
 import org.tomlj.TomlArray;
 import org.tomlj.TomlTable;
 
@@ -8,10 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class TomlWriter {
     private final StringBuilder sb = new StringBuilder();
@@ -115,8 +115,8 @@ class TomlWriter {
             sb.append(value);
         } else if (type.isEnum()) {
             sb.append("\"").append(value).append("\"");
-        } else if (value instanceof String str) {
-            String s = new String(str.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+        } else if (value instanceof String) {
+            String s = new String(((String) value).getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
             if (s.contains("\n")) {
                 sb.append("\"\"\"\n");
                 sb.append(s);
@@ -124,8 +124,8 @@ class TomlWriter {
             } else {
                 sb.append("\"").append(s).append("\"");
             }
-        } else if (value instanceof LocalDateTime dateTime) {
-            sb.append(dateTime.format(DateTimeFormatter.ISO_DATE_TIME));
+        } else if (value instanceof LocalDateTime) {
+            sb.append(((LocalDateTime) value).format(DateTimeFormatter.ISO_DATE_TIME));
         } else if (isTable(value)) {
             writeMap(toMetaMap(value), path);
         } else if (isArray(value)) {
@@ -146,7 +146,7 @@ class TomlWriter {
     }
 
     private void writeLine(int count) {
-        sb.append("\n".repeat(Math.max(0, count)));
+        sb.append(StringUtil.repeat("\n", Math.max(0, count)));
     }
 
     private String formatKey(String key) {
@@ -170,14 +170,16 @@ class TomlWriter {
         if (clazz.isArray()) {
             Class<?> componentType = clazz.getComponentType();
             return TomlConfig.class.isAssignableFrom(componentType) || TomlTable.class.isAssignableFrom(componentType);
-        } else if (obj instanceof List<?> list) {
+        } else if (obj instanceof List<?>) {
+            val list = (List<?>) obj;
             for (Object e : list) {
                 if (!(e instanceof TomlConfig) && !(e instanceof TomlTable) && !(e instanceof Map<?, ?>)) {
                     return false;
                 }
             }
             return !list.isEmpty();
-        } else if (obj instanceof TomlArray array) {
+        } else if (obj instanceof TomlArray) {
+            val array = (TomlArray) obj;
             for (int i = 0; i < array.size(); i++) {
                 Object e = array.get(i);
                 if (!(e instanceof TomlConfig) && !(e instanceof TomlTable) && !(e instanceof Map<?, ?>)) {
@@ -190,9 +192,11 @@ class TomlWriter {
     }
 
     private Map<String, TomlConfig.MetaValue> toMetaMap(Object obj) {
-        if (obj instanceof TomlConfig tomlConfig) {
+        if (obj instanceof TomlConfig) {
+            val tomlConfig = (TomlConfig) obj;
             return tomlConfig.toMetaMap();
-        } else if (obj instanceof TomlTable tomlTable) {
+        } else if (obj instanceof TomlTable) {
+            val tomlTable = (TomlTable) obj;
             Map<String, TomlConfig.MetaValue> resultMap = new LinkedHashMap<>();
             Map<String, TomlConfig.MetaValue> arrayMap = new LinkedHashMap<>();
             Map<String, TomlConfig.MetaValue> tableMap = new LinkedHashMap<>();
@@ -210,7 +214,8 @@ class TomlWriter {
             resultMap.putAll(arrayMap);
             resultMap.putAll(tableMap);
             return resultMap;
-        } else if (obj instanceof Map<?, ?> map) {
+        } else if (obj instanceof Map<?, ?>) {
+            val map = (Map<?, ?>) obj;
             Map<String, TomlConfig.MetaValue> resultMap = new LinkedHashMap<>();
             Map<String, TomlConfig.MetaValue> arrayMap = new LinkedHashMap<>();
             Map<String, TomlConfig.MetaValue> tableMap = new LinkedHashMap<>();
@@ -235,13 +240,15 @@ class TomlWriter {
     private List<?> toList(Object obj) {
         if (obj.getClass().isArray()) {
             return TomlHelper.arrayToList(obj);
-        } else if (obj instanceof TomlArray array) {
+        } else if (obj instanceof TomlArray) {
+            val array = (TomlArray) obj;
             return array.toList();
-        } else if (obj instanceof List<?> list) {
-            return list;
+        } else if (obj instanceof List<?>) {
+            return (List<?>) obj;
         }
-        else if (obj instanceof Set<?> set) {
-            return set.stream().toList();
+        else if (obj instanceof Set<?>) {
+            val set = (Set<?>) obj;
+            return new ArrayList<>(set);
         }
         throw new IllegalArgumentException(obj.getClass().getName() + " is not a toml array type");
     }

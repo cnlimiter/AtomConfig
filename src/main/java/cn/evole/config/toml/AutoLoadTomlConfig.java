@@ -3,6 +3,8 @@ package cn.evole.config.toml;
 
 import cn.evole.config.toml.annotation.TableField;
 import cn.evole.config.toml.util.NamingUtil;
+import cn.evole.config.toml.util.StringUtil;
+import lombok.val;
 import org.tomlj.TomlTable;
 
 import java.lang.reflect.*;
@@ -45,7 +47,7 @@ public abstract class AutoLoadTomlConfig extends TomlConfig {
 
             String fieldHyphenatedName = NamingUtil.lowerCamelCaseToHyphenated(field.getName());
             String fieldUnderlineName = NamingUtil.lowerCamelCaseToUnderline(field.getName());
-            String annotationName = tableField != null && !tableField.value().isBlank() ? tableField.value() : "";
+            String annotationName = tableField != null && !StringUtil.isBlank(tableField.value()) ? tableField.value() : "";
 
             try {
                 String fieldKey = null;
@@ -248,7 +250,7 @@ public abstract class AutoLoadTomlConfig extends TomlConfig {
 
             switch (ch) {
                 // 栈入
-                case '[' -> {
+                case '[' : {
                     Class<?> componentType = fieldType.getComponentType();
                     if (componentType == null) {
                         throw new IllegalStateException("Default value array dimensions does not match field type dimensions");
@@ -256,9 +258,10 @@ public abstract class AutoLoadTomlConfig extends TomlConfig {
                     x[0] = i + 1;
                     result.add(parseArrayDefaultValue(componentType, defaultValue, x));
                     i = x[0];
+                    break;
                 }
                 // 栈出
-                case ']' -> {
+                case ']' : {
                     if (sb.length() > 0) {
                         result.add(parseDefaultValue(fieldType.getComponentType(), sb.toString()));
                         sb.setLength(0);
@@ -270,20 +273,23 @@ public abstract class AutoLoadTomlConfig extends TomlConfig {
                     return array;
                 }
                 // 转义
-                case '\\' -> {
+                case '\\' : {
                     String trans = i + 1 < chars.length ? ("" + ch + chars[++i]) : "\0";
-                    sb.append(trans.translateEscapes());
+                    sb.append(StringUtil.translateEscapes(trans));
+                    break;
                 }
                 // 分割
-                case ',' -> {
+                case ',' : {
                     if (sb.length() > 0) {
                         result.add(parseDefaultValue(fieldType.getComponentType(), sb.toString()));
                         sb.setLength(0);
                     }
+                    break;
                 }
                 // 构建
-                default -> {
+                default : {
                     sb.append(ch);
+                    break;
                 }
             }
         }
@@ -316,14 +322,20 @@ public abstract class AutoLoadTomlConfig extends TomlConfig {
     }
 
     private void listParameterizedTypeToArrayClassName(Type type, StringBuilder sb) {
-        if (type instanceof ParameterizedType pt) {
+        if (type instanceof ParameterizedType) {
+            val pt = (ParameterizedType) type;
             Type actualType = pt.getActualTypeArguments()[0];
-            if (actualType instanceof ParameterizedType p && !List.class.isAssignableFrom((Class<?>) p.getRawType())) {
-                throw new IllegalArgumentException("Parameterized type " + ((Class<?>) p.getRawType()).getName() + " is not a List");
+            if (actualType instanceof ParameterizedType ) {
+                val p = (ParameterizedType) actualType;
+                if (!List.class.isAssignableFrom((Class<?>) p.getRawType())){
+                    throw new IllegalArgumentException("Parameterized type " + ((Class<?>) p.getRawType()).getName() + " is not a List");
+
+                }
             }
             sb.append("[");
             listParameterizedTypeToArrayClassName(actualType, sb);
-        } else if (type instanceof Class<?> clazz) {
+        } else if (type instanceof Class<?>) {
+            val clazz = (Class<?>) type;
             if (clazz == Integer.class) {
                 sb.append("I");
             } else if (clazz == Long.class) {

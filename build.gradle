@@ -10,7 +10,7 @@ plugins {
 group = main_group
 version = main_version
 
-def targetJavaVersion = 17
+def targetJavaVersion = 8
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
@@ -40,6 +40,10 @@ dependencies {
 
     compileOnly("org.antlr:antlr4-runtime:${antlr4_version}")
     compileOnly("org.jetbrains:annotations:${annotations_version}")
+
+    compileOnly "org.projectlombok:lombok:${lombok_version}"
+    annotationProcessor "org.projectlombok:lombok:${lombok_version}"
+
 }
 
 artifacts {
